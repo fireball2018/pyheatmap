@@ -17,7 +17,7 @@ def main():
         dot = "%s,%s" % (random.randint(0,800), random.randint(0,2000))
         data.append(dot)
     
-    log_data = ReadClicks(data, 3000)
+    log_data = ReadClicks(data, 500)
     heatmap = Heatmap(log_data.coords, 'tmp/tmp')
     print "Heatmap saved: ", heatmap.make()
     

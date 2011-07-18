@@ -55,7 +55,7 @@ class ReadClicks():
 
     def __init__(self, data, select_dots=1000):
         
-        select_dots = select_dots > 10 and round(select_dots + select_dots*0.1) or select_dots
+        select_dots = select_dots > 10 and int(round(select_dots + select_dots*0.1)) or select_dots
         
         if len(data) > select_dots:
             new_data = []
