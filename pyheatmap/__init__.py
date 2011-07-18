@@ -23,7 +23,6 @@ class Point():
 
     @property
     def xy(self):
-        
         return "x%sy%s" % (self.x, self.y)
 
 class ClickLog():
@@ -55,7 +54,9 @@ class ReadClicks():
     data = []
 
     def __init__(self, data, select_dots=1000):
-
+        
+        select_dots = select_dots > 10 and round(select_dots + select_dots*0.1) or select_dots
+        
         if len(data) > select_dots:
             new_data = []
 
@@ -92,8 +93,8 @@ class ReadClicks():
 
 class Heatmap():
 
-    dotimage    = ''
-    colorimage  = ''
+    dotimage    = 'bolilla.png'
+    colorimage  = 'colors.png'
     opacity     = 0.5
     dotwidth    = 64
     format      = 'png'
@@ -110,7 +111,6 @@ class Heatmap():
         self.dotimage = os.path.join(res_dir, "bolilla.png")
         self.colorimage = os.path.join(res_dir, "colors.png")
 
-        
     def normalizespot(self):
         """docstring for normalizespot"""
         intensity = 100-math.ceil(100/self.data.reps)
@@ -122,13 +122,18 @@ class Heatmap():
         """docstring for iterate"""
         halfwidth = self.dotwidth/2
         compose = []
-        compose.append("convert -page %sx%s pattern:gray100 " % (self.data.x + halfwidth, self.data.y + halfwidth))
+        compose.append("convert -page %sx%s pattern:gray100" % (self.data.x + halfwidth, self.data.y + halfwidth))
 
         for dot in self.data.items:
-            compose.append("-page +%s+%s %s.bol.png " % ( dot.x - halfwidth, dot.y - halfwidth, self.name))
+            
+            dot_x = dot.x - halfwidth
+            dot_y = dot.y - halfwidth
+            
+            if dot_x >= 0 and dot_y  >= 0:
+                compose.append("-page +%s+%s %s.bol.png" % (dot_x, dot_y, self.name))
             
         compose.append("-background white -compose multiply -flatten %s.empty.png" % self.name)
-        compose = "".join(compose)
+        compose = " ".join(compose)
         
         os.system(compose)
         
@@ -144,10 +149,13 @@ class Heatmap():
         os.system(colorize)
         
         #and apply transparency...
-        transparency = 'convert %(name)s.colorized.png -channel A -fx "A*%(opacity)s"  %(name)s.final.%(format)s' % {'name':self.name, 'opacity':self.opacity, 'format':self.format}
-        
+        transparency = 'convert %(name)s.colorized.png -channel A -fx "A*%(opacity)s" %(name)s.final.%(format)s' % {'name':self.name, 'opacity':self.opacity, 'format':self.format}
         os.system(transparency)
-
-if __name__ == '__main__':
-    main()
-
+    
+    def make(self):
+        """docstring for make"""
+        self.normalizespot()
+        self.iterate()
+        self.colorize()
+        
+        return "%(name)s.final.%(format)s" % {'name':self.name, 'format':self.format}
