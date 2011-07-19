@@ -9,7 +9,7 @@ import sys
 import os
 import random
 
-from pyheatmap import ReadClicks, Heatmap
+from __init__ import ReadClicks, Heatmap
 
 def main():
     data = []

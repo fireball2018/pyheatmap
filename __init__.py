@@ -67,9 +67,7 @@ class ReadClicks():
             del new_data
 
         for dot in data:
-
             dot = dot.split(",")
-
             if len(dot) >= 2 and dot[0].isdigit() and dot[1].isdigit():
                 self.data.append(Point(int(dot[0]), int(dot[1])))
 
